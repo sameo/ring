@@ -133,3 +133,7 @@ mod sealed {
     // ```
     pub trait Sealed {}
 }
+
+/// TBD: Discuss how to upstream this work around
+#[cfg(any(target_os="uefi"))]
+mod uefi_stub;
