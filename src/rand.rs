@@ -199,8 +199,8 @@ use self::darwin::fill as fill_impl;
 #[cfg(any(target_os = "fuchsia"))]
 use self::fuchsia::fill as fill_impl;
 
-#[cfg(any(target_os = "uefi"))]
-use self::uefi::fill as fill_impl;
+#[cfg(any(target_os = "uefi", target_os = "none"))]
+use self::no_std::fill as fill_impl;
 
 #[cfg(any(target_os = "android", target_os = "linux"))]
 mod sysrand_chunk {
@@ -439,8 +439,8 @@ mod fuchsia {
     }
 }
 
-#[cfg(any(target_os = "uefi"))]
-mod uefi {
+#[cfg(any(target_os = "uefi", target_os = "none"))]
+mod no_std {
     use crate::error;
 
     pub fn fill(dest: &mut [u8]) -> Result<(), error::Unspecified> {
@@ -459,7 +459,7 @@ mod uefi {
             // https://github.com/briansmith/ring/pull/1406#discussion_r720394928
             // Current implementation may cause problem on AMD cpu. REF:
             // https://github.com/nagisa/rust_rdrand/blob/f2fdd528a6103c946a2e9d0961c0592498b36493/src/lib.rs#L161
-            prefixed_extern! {
+            extern "C" {
                 static mut OPENSSL_ia32cap_P: [u32; 4];
             }
             const FLAG: u32 = 1 << 30;
@@ -472,10 +472,10 @@ mod uefi {
         }
 
         use crate::c;
-        prefixed_extern! {
+        extern "C" {
             fn CRYPTO_rdrand_multiple8_buf(buffer: *mut u8, length: c::size_t) -> c::int;
         }
-        prefixed_extern! {
+        extern "C" {
             fn CRYPTO_rdrand(dest: *mut u8) -> c::int;
         }
 
