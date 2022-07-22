@@ -460,12 +460,13 @@ mod no_std {
             // Current implementation may cause problem on AMD cpu. REF:
             // https://github.com/nagisa/rust_rdrand/blob/f2fdd528a6103c946a2e9d0961c0592498b36493/src/lib.rs#L161
             extern "C" {
-                static mut OPENSSL_ia32cap_P: [u32; 4];
+                static mut GFp_ia32cap_P: [u32; 4];
             }
             const FLAG: u32 = 1 << 30;
-            unsafe { OPENSSL_ia32cap_P[1] & FLAG == FLAG }
+            unsafe { GFp_ia32cap_P[1] & FLAG == FLAG }
         }
 
+        let _ = crate::cpu::features();
         // We must make sure current cpu support `rdrand`
         if !is_avaiable() {
             return Err(error::Unspecified);
