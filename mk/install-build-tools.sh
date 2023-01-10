@@ -65,6 +65,12 @@ case $target in
 --target=i686-unknown-linux-musl|--target=x86_64-unknown-linux-musl)
   use_clang=1
   ;;
+--target=riscv64gc-unknown-linux-gnu)
+  install_packages \
+    gcc-riscv64-linux-gnu \
+    libc6-dev-riscv64-cross \
+    qemu-user
+  ;;
 --target=wasm32-unknown-unknown)
   # The version of wasm-bindgen-cli must match the wasm-bindgen version.
   wasm_bindgen_version=$(cargo metadata --format-version 1 | jq -r '.packages | map(select( .name == "wasm-bindgen")) | map(.version) | .[0]')
