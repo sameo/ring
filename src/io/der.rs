@@ -54,6 +54,16 @@ impl From<Tag> for u8 {
     } // XXX: narrowing conversion.
 }
 
+pub fn read_sequence_and_get_value<'a>(
+    input: &mut untrusted::Reader<'a>,
+) -> Result<untrusted::Input<'a>, error::Unspecified> {
+    let (actual_tag, inner) = read_tag_and_get_value(input)?;
+    if usize::from(Tag::Sequence) != usize::from(actual_tag) {
+        return Err(error::Unspecified);
+    }
+    Ok(inner)
+}
+
 pub fn expect_tag_and_get_value<'a>(
     input: &mut untrusted::Reader<'a>,
     tag: Tag,
